@@ -102,9 +102,9 @@ export function SegmentChart({ medians }: SegmentChartProps) {
         <YAxis tickFormatter={formatTime} tick={{ fontSize: 12 }} width={50} />
         <Tooltip content={<ChartTooltip />} />
         <Bar dataKey="seconds" radius={[4, 4, 0, 0]}>
-          {data.map((entry, index) => (
+          {data.map((entry) => (
             <Cell
-              key={index}
+              key={entry.name}
               fill={entry.type === 'run' ? COLORS.run : COLORS.station}
             />
           ))}
