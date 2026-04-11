@@ -3,6 +3,8 @@ import { median, medianSplits } from '../lib/stats';
 import { formatTime } from '../lib/time';
 import type { HyroxResult, Division, Gender } from '../types/hyrox';
 
+import { SegmentChart } from './segmentChart';
+
 interface PacingGuideProps {
   results: HyroxResult[];
 }
@@ -159,8 +161,16 @@ export function PacingGuide({ results }: PacingGuideProps) {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
           Segment-by-segment breakdown
         </h2>
-        <div className="h-64 flex items-center justify-center text-gray-400 text-sm">
-          [Chart goes here]
+        <SegmentChart medians={medians} />
+        <div className="flex items-center gap-4 mt-4 text-sm text-gray-600">
+          <div className="flex items-center gap-1.5">
+            <span className="inline-block w-3 h-3 rounded-sm bg-blue-500" />
+            Run
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="inline-block w-3 h-3 rounded-sm bg-orange-500" />
+            Station
+          </div>
         </div>
       </section>
 
