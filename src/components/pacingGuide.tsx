@@ -1,5 +1,7 @@
-import { useState } from "react";
-import type { HyroxResult, Division, Gender } from "../types/hyrox";
+import { useState, useMemo } from 'react';
+import { medianSplits } from '../lib/stats';
+import { formatTime } from '../lib/time';
+import type { HyroxResult, Division, Gender } from '../types/hyrox';
 
 interface PacingGuideProps {
   results: HyroxResult[];
@@ -7,21 +9,44 @@ interface PacingGuideProps {
 
 // Target finish times in seconds. We pick a sensible range of common goals.
 const TARGET_TIMES = [
-  { label: "1:00", seconds: 3600 },
-  { label: "1:15", seconds: 4500 },
-  { label: "1:30", seconds: 5400 },
-  { label: "1:45", seconds: 6300 },
-  { label: "2:00", seconds: 7200 },
-  { label: "2:15", seconds: 8100 },
-  { label: "2:30", seconds: 9000 },
+  { label: '1:00', seconds: 3600 },
+  { label: '1:15', seconds: 4500 },
+  { label: '1:30', seconds: 5400 },
+  { label: '1:45', seconds: 6300 },
+  { label: '2:00', seconds: 7200 },
+  { label: '2:15', seconds: 8100 },
+  { label: '2:30', seconds: 9000 },
 ];
 
 export function PacingGuide({ results }: PacingGuideProps) {
   const [targetSeconds, setTargetSeconds] = useState<number>(5400); // default 1:30
-  const [gender, setGender] = useState<Gender>("male");
-  const [division, setDivision] = useState<Division>("open");
+  const [gender, setGender] = useState<Gender>('male');
+  const [division, setDivision] = useState<Division>('open');
 
-  // ... rest of the component
+  // How wide a window around the target time to include.
+  // ±2 minutes gives a tight enough cluster to be meaningful
+  // but wide enough to have a healthy sample size.
+  const TARGET_WINDOW_SECONDS = 120;
+
+  // Filter the full results down to athletes who match the current filters
+  // AND finished within the target time window.
+  // useMemo so this only recomputes when inputs actually change, not on every render.
+  const filteredResults = useMemo(() => {
+    return results.filter(
+      (r) =>
+        r.gender === gender &&
+        r.division === division &&
+        Math.abs(r.totalTime - targetSeconds) <= TARGET_WINDOW_SECONDS,
+    );
+  }, [results, gender, division, targetSeconds]);
+
+  // Compute the median splits for the filtered set.
+  // Also memoized — medianSplits does real work (sorting 8 arrays) so dont run on every render
+  const medians = useMemo(
+    () => medianSplits(filteredResults),
+    [filteredResults],
+  );
+
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-8">
       <header>
@@ -103,15 +128,21 @@ export function PacingGuide({ results }: PacingGuideProps) {
       <section className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <p className="text-sm text-gray-500">Total run time</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">--:--</p>
+          <p className="text-2xl font-bold text-gray-900 mt-1">
+            {formatTime(medians.runs.reduce((a, b) => a + b, 0))}
+          </p>
         </div>
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <p className="text-sm text-gray-500">Total work time</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">--:--</p>
+          <p className="text-2xl font-bold text-gray-900 mt-1">
+            {formatTime(medians.works.reduce((a, b) => a + b, 0))}
+          </p>
         </div>
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <p className="text-sm text-gray-500">Total roxzone time</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">--:--</p>
+          <p className="text-2xl font-bold text-gray-900 mt-1">
+            {formatTime(medians.roxzones.reduce((a, b) => a + b, 0))}
+          </p>
         </div>
       </section>
 
@@ -132,13 +163,6 @@ export function PacingGuide({ results }: PacingGuideProps) {
         </h2>
         <p className="text-gray-500 text-sm">[Station table goes here]</p>
       </section>
-
-      {/* Debug: current filter state. Remove later. */}
-      {import.meta.env.DEV && (
-        <pre className="text-xs bg-gray-100 p-3 rounded text-gray-600">
-          {JSON.stringify({ targetSeconds, gender, division }, null, 2)}
-        </pre>
-      )}
     </div>
   );
 }
