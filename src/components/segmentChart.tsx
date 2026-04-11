@@ -8,7 +8,7 @@ import {
   Cell,
 } from 'recharts';
 import type { MedianSplits } from '../lib/stats';
-import { formatTime } from '../lib/time';
+import { formatDuration, formatTime } from '../lib/time';
 
 interface SegmentChartProps {
   medians: MedianSplits;
@@ -99,7 +99,11 @@ export function SegmentChart({ medians }: SegmentChartProps) {
           textAnchor="end"
           interval={0}
         />
-        <YAxis tickFormatter={formatTime} tick={{ fontSize: 12 }} width={50} />
+        <YAxis
+          tickFormatter={formatDuration}
+          tick={{ fontSize: 12 }}
+          width={50}
+        />
         <Tooltip content={<ChartTooltip />} />
         <Bar dataKey="seconds" radius={[4, 4, 0, 0]}>
           {data.map((entry) => (
