@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { medianSplits } from '../lib/stats';
+import { median, medianSplits } from '../lib/stats';
 import { formatTime } from '../lib/time';
 import type { HyroxResult, Division, Gender } from '../types/hyrox';
 
@@ -18,15 +18,15 @@ const TARGET_TIMES = [
   { label: '2:30', seconds: 9000 },
 ];
 
+// How wide a window around the target time to include.
+// ±2 minutes gives a tight enough cluster to be meaningful
+// but wide enough to have a healthy sample size.
+const TARGET_WINDOW_SECONDS = 120;
+
 export function PacingGuide({ results }: PacingGuideProps) {
   const [targetSeconds, setTargetSeconds] = useState<number>(5400); // default 1:30
   const [gender, setGender] = useState<Gender>('male');
   const [division, setDivision] = useState<Division>('open');
-
-  // How wide a window around the target time to include.
-  // ±2 minutes gives a tight enough cluster to be meaningful
-  // but wide enough to have a healthy sample size.
-  const TARGET_WINDOW_SECONDS = 120;
 
   // Filter the full results down to athletes who match the current filters
   // AND finished within the target time window.
@@ -46,6 +46,14 @@ export function PacingGuide({ results }: PacingGuideProps) {
     () => medianSplits(filteredResults),
     [filteredResults],
   );
+
+  const headlineStats = useMemo(() => {
+    return {
+      runTime: median(filteredResults.map((r) => r.runTime)),
+      workTime: median(filteredResults.map((r) => r.workTime)),
+      roxzoneTime: median(filteredResults.map((r) => r.roxzoneTime)),
+    };
+  }, [filteredResults]);
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-8">
@@ -129,19 +137,19 @@ export function PacingGuide({ results }: PacingGuideProps) {
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <p className="text-sm text-gray-500">Total run time</p>
           <p className="text-2xl font-bold text-gray-900 mt-1">
-            {formatTime(medians.runs.reduce((a, b) => a + b, 0))}
+            {formatTime(headlineStats.runTime)}
           </p>
         </div>
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <p className="text-sm text-gray-500">Total work time</p>
           <p className="text-2xl font-bold text-gray-900 mt-1">
-            {formatTime(medians.works.reduce((a, b) => a + b, 0))}
+            {formatTime(headlineStats.workTime)}
           </p>
         </div>
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <p className="text-sm text-gray-500">Total roxzone time</p>
           <p className="text-2xl font-bold text-gray-900 mt-1">
-            {formatTime(medians.roxzones.reduce((a, b) => a + b, 0))}
+            {formatTime(headlineStats.roxzoneTime)}
           </p>
         </div>
       </section>
