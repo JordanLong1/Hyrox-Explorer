@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import type { HyroxResult, Division, Gender } from '../types/hyrox';
+import { useState } from "react";
+import type { HyroxResult, Division, Gender } from "../types/hyrox";
 
 interface PacingGuideProps {
   results: HyroxResult[];
@@ -7,19 +7,19 @@ interface PacingGuideProps {
 
 // Target finish times in seconds. We pick a sensible range of common goals.
 const TARGET_TIMES = [
-  { label: '1:00', seconds: 3600 },
-  { label: '1:15', seconds: 4500 },
-  { label: '1:30', seconds: 5400 },
-  { label: '1:45', seconds: 6300 },
-  { label: '2:00', seconds: 7200 },
-  { label: '2:15', seconds: 8100 },
-  { label: '2:30', seconds: 9000 },
+  { label: "1:00", seconds: 3600 },
+  { label: "1:15", seconds: 4500 },
+  { label: "1:30", seconds: 5400 },
+  { label: "1:45", seconds: 6300 },
+  { label: "2:00", seconds: 7200 },
+  { label: "2:15", seconds: 8100 },
+  { label: "2:30", seconds: 9000 },
 ];
 
 export function PacingGuide({ results }: PacingGuideProps) {
   const [targetSeconds, setTargetSeconds] = useState<number>(5400); // default 1:30
-  const [gender, setGender] = useState<Gender>('male');
-  const [division, setDivision] = useState<Division>('open');
+  const [gender, setGender] = useState<Gender>("male");
+  const [division, setDivision] = useState<Division>("open");
 
   // ... rest of the component
   return (
@@ -92,6 +92,8 @@ export function PacingGuide({ results }: PacingGuideProps) {
             >
               <option value="open">Open</option>
               <option value="pro">Pro</option>
+              <option value="relay">Relay</option>
+              <option value="doubles">Doubles</option>
             </select>
           </div>
         </div>
@@ -132,9 +134,11 @@ export function PacingGuide({ results }: PacingGuideProps) {
       </section>
 
       {/* Debug: current filter state. Remove later. */}
-      <pre className="text-xs bg-gray-100 p-3 rounded text-gray-600">
-        {JSON.stringify({ targetSeconds, gender, division }, null, 2)}
-      </pre>
+      {import.meta.env.DEV && (
+        <pre className="text-xs bg-gray-100 p-3 rounded text-gray-600">
+          {JSON.stringify({ targetSeconds, gender, division }, null, 2)}
+        </pre>
+      )}
     </div>
   );
 }
