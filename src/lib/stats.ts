@@ -1,27 +1,46 @@
 import type { HyroxResult } from '../types/hyrox';
 
 /**
- * Returns the median of a numeric array.
- * Empty arrays return 0 — callers should check sample size separately
- * if they want to distinguish "no data" from "real zero".
+ * Returns the value at a given percentile (0-1) of a numeric array.
+ * Uses linear interpolation between the two surrounding values when the
+ * percentile doesn't land exactly on an index.
+ *
+ * Filters out zeros, which represent missing data in this dataset.
+ * Returns 0 for empty input.
+ *
+ * Examples:
+ *   percentile([1,2,3,4,5], 0.5) -> 3   (median)
+ *   percentile([1,2,3,4,5], 0.25) -> 2  (25th percentile)
+ *   percentile([1,2,3,4,5], 0.75) -> 4  (75th percentile)
  */
-export function median(values: number[]): number {
+export function percentile(values: number[], p: number): number {
   if (values.length === 0) return 0;
 
-  // Filter out zeros — in our dataset, 0 means "missing split", not a real time.
-  // Including zeros would drag medians down artificially.
   const valid = values.filter((v) => v > 0);
   if (valid.length === 0) return 0;
 
-  // Sort a copy so we don't mutate the caller's array.
   const sorted = [...valid].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
 
-  // Even-length arrays: average the two middle values.
-  // Odd-length arrays: return the single middle value.
-  return sorted.length % 2 === 0
-    ? (sorted[mid - 1] + sorted[mid]) / 2
-    : sorted[mid];
+  // Position in the sorted array — may be fractional.
+  const index = (sorted.length - 1) * p;
+  const lower = Math.floor(index);
+  const upper = Math.ceil(index);
+
+  // Exact hit on an index — return that value.
+  if (lower === upper) return sorted[lower];
+
+  // Otherwise, linearly interpolate between the two neighbors.
+  // This is the standard "linear" percentile method (matches numpy's default).
+  const weight = index - lower;
+  return sorted[lower] * (1 - weight) + sorted[upper] * weight;
+}
+
+/**
+ * Returns the median (50th percentile) of a numeric array.
+ * Thin wrapper around `percentile` for readability at call sites.
+ */
+export function median(values: number[]): number {
+  return percentile(values, 0.5);
 }
 
 /**
@@ -61,4 +80,29 @@ export function medianSplits(results: HyroxResult[]): MedianSplits {
   );
 
   return { runs, works, roxzones };
+}
+
+/**
+ * Per-station summary statistics: 25th percentile, median, and 75th percentile.
+ * The interquartile range (p25 to p75) shows how much variance there is at
+ * each station — a wide spread means athletes vary a lot, a narrow spread
+ * means most athletes finish in a similar time.
+ */
+export interface StationStat {
+  index: number; // 0-7, position in the race
+  p25: number;
+  median: number;
+  p75: number;
+}
+
+export function stationStats(results: HyroxResult[]): StationStat[] {
+  return Array.from({ length: 8 }, (_, i) => {
+    const values = results.map((r) => r.works[i]);
+    return {
+      index: i,
+      p25: percentile(values, 0.25),
+      median: percentile(values, 0.5),
+      p75: percentile(values, 0.75),
+    };
+  });
 }

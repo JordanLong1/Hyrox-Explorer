@@ -1,10 +1,10 @@
 import { useState, useMemo } from 'react';
-import { median, medianSplits } from '../lib/stats';
+import { median, medianSplits, stationStats } from '../lib/stats';
 import { formatTime } from '../lib/time';
 import type { HyroxResult, Division, Gender } from '../types/hyrox';
 
 import { SegmentChart } from './segmentChart';
-
+import { StationTable } from './stationTable';
 interface PacingGuideProps {
   results: HyroxResult[];
 }
@@ -46,6 +46,11 @@ export function PacingGuide({ results }: PacingGuideProps) {
   // Also memoized — medianSplits does real work (sorting 8 arrays) so dont run on every render
   const medians = useMemo(
     () => medianSplits(filteredResults),
+    [filteredResults],
+  );
+
+  const stations = useMemo(
+    () => stationStats(filteredResults),
     [filteredResults],
   );
 
@@ -179,7 +184,11 @@ export function PacingGuide({ results }: PacingGuideProps) {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">
           Station breakdown
         </h2>
-        <p className="text-gray-500 text-sm">[Station table goes here]</p>
+        <p className="text-sm text-gray-600 mb-4">
+          25th and 75th percentiles show the spread of times at each station.
+          Click a column header to sort.
+        </p>
+        <StationTable stats={stations} />
       </section>
     </div>
   );
