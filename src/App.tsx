@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
-import { loadHyroxData } from "./lib/loadHyroxData";
-import type { HyroxResult } from "./types/hyrox";
+import { useEffect, useState } from 'react';
+import { loadHyroxData } from './lib/loadHyroxData';
+import { PacingGuide } from './components/pacingGuide';
+import type { HyroxResult } from './types/hyrox';
 
 function App() {
   const [results, setResults] = useState<HyroxResult[] | null>(null);
@@ -21,12 +22,8 @@ function App() {
   }
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold text-red-600 mb-4">Hyrox Explorer</h1>
-      <p className="mb-2">Loaded {results.length.toLocaleString()} results</p>
-      <pre className="text-xs bg-gray-100 p-4 rounded overflow-auto max-h-96">
-        {JSON.stringify(results[0], null, 2)}
-      </pre>
+    <div className="min-h-screen bg-gray-50">
+      <PacingGuide results={results} />
     </div>
   );
 }
