@@ -1,2 +1,15 @@
-# Hyrox-Explorer
-A data viz app for exploring Hyrox race results — see what splits a target finish time requires, compare athletes, and dig into station-level performance. React + TypeScript + Recharts.
+# Hyrox Explorer
+
+   A data visualization project exploring ~90k Hyrox race results.
+   Built with React, TypeScript, Tailwind, and Recharts.
+
+   ## Running locally
+
+```bash
+   npm install
+   npm run dev
+```
+
+   ## Data source
+
+   Race results dataset from [Kaggle](https://www.kaggle.com/datasets/jgug05/hyrox-results).
