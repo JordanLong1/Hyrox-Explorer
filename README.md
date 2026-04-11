@@ -22,7 +22,3 @@
    npm install
    npm run dev
 ```
-
-## Data source
-
-   Race results dataset from [Kaggle](https://www.kaggle.com/datasets/jgug05/hyrox-results).
