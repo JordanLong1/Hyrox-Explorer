@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { loadHyroxData } from './lib/loadHyroxData';
 import { PacingGuide } from './components/pacingGuide';
+import { PacingGuideSkeleton } from './components/pacingGuideSkeleton';
 import type { HyroxResult } from './types/hyrox';
 
 function App() {
@@ -14,11 +15,24 @@ function App() {
   }, []);
 
   if (error) {
-    return <div className="p-8 text-red-600">Error: {error}</div>;
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+        <div className="bg-white border border-red-200 rounded-lg p-6 max-w-md text-center">
+          <h2 className="text-lg font-semibold text-red-700">
+            Failed to load data
+          </h2>
+          <p className="mt-2 text-sm text-gray-600">{error}</p>
+        </div>
+      </div>
+    );
   }
 
   if (!results) {
-    return <div className="p-8 text-gray-600">Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <PacingGuideSkeleton />
+      </div>
+    );
   }
 
   return (
