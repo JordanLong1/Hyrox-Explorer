@@ -183,7 +183,20 @@ export function PacingGuide({ results }: PacingGuideProps) {
 
           <p className="text-sm text-gray-500">
             Based on {sampleSize.toLocaleString()} athletes who finished within
-            ±2 minutes of your target.
+            {' '}
+            ±
+            {TARGET_WINDOW_SECONDS % 60 === 0
+              ? `${TARGET_WINDOW_SECONDS / 60} minute${
+                  TARGET_WINDOW_SECONDS / 60 === 1 ? '' : 's'
+                }`
+              : `${Math.floor(TARGET_WINDOW_SECONDS / 60) > 0
+                  ? `${Math.floor(TARGET_WINDOW_SECONDS / 60)} minute${
+                      Math.floor(TARGET_WINDOW_SECONDS / 60) === 1 ? '' : 's'
+                    } `
+                  : ''}${TARGET_WINDOW_SECONDS % 60} second${
+                  TARGET_WINDOW_SECONDS % 60 === 1 ? '' : 's'
+                }`}{' '}
+            of your target.
           </p>
 
           {/* Segment chart */}
