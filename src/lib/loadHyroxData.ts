@@ -1,17 +1,17 @@
-import Papa from "papaparse";
+import Papa from 'papaparse';
 import type {
   RawHyroxRow,
   HyroxResult,
   Division,
   Gender,
-} from "../types/hyrox";
+} from '../types/hyrox';
 
 // Convert "H:MM:SS" to seconds. Returns 0 for empty/invalid.
 // We use 0 rather than null so downstream math doesn't need null checks —
 // a missing split will just contribute nothing to medians.
 function parseTime(value: string): number {
-  if (!value || value.trim() === "") return 0;
-  const parts = value.split(":").map(Number);
+  if (!value || value.trim() === '') return 0;
+  const parts = value.split(':').map(Number);
   if (parts.some(isNaN)) return 0;
 
   // Handle both "H:MM:SS" and "MM:SS" just in case
@@ -29,7 +29,7 @@ function parseTime(value: string): number {
 // Narrow a raw string to a Division, or return null if it doesn't match.
 // The `as Division` cast is safe because we checked membership first.
 function parseDivision(value: string): Division | null {
-  const valid: Division[] = ["open", "pro", "doubles", "relay"];
+  const valid: Division[] = ['open', 'pro', 'doubles', 'relay'];
   const normalized = value.trim().toLowerCase();
   return valid.includes(normalized as Division)
     ? (normalized as Division)
@@ -38,7 +38,7 @@ function parseDivision(value: string): Division | null {
 
 function parseGender(value: string): Gender | null {
   const normalized = value.trim().toLowerCase();
-  if (normalized === "male" || normalized === "female") return normalized;
+  if (normalized === 'male' || normalized === 'female') return normalized;
   return null;
 }
 
@@ -100,7 +100,7 @@ function transformRow(raw: RawHyroxRow): HyroxResult | null {
 
 // Fetch and parse the CSV. Returns a promise that resolves to the clean results.
 export async function loadHyroxData(): Promise<HyroxResult[]> {
-  const response = await fetch("/data/hyrox_results.csv");
+  const response = await fetch('/data/hyrox_results.csv');
   if (!response.ok) {
     throw new Error(`Failed to fetch CSV: ${response.status}`);
   }
@@ -113,7 +113,7 @@ export async function loadHyroxData(): Promise<HyroxResult[]> {
 
   if (parsed.errors.length > 0) {
     // Log but don't throw — PapaParse often flags minor issues we can ignore
-    console.warn("CSV parse warnings:", parsed.errors.slice(0, 5));
+    console.warn('CSV parse warnings:', parsed.errors.slice(0, 5));
   }
 
   const results: HyroxResult[] = [];
