@@ -1,12 +1,11 @@
 import { useState, type ReactNode } from 'react';
 import type { StationStat } from '../lib/stats';
-import { formatDuration, formatTime } from '../lib/time';
+import { formatTime, formatDuration } from '../lib/time';
 
 interface StationTableProps {
   stats: StationStat[];
 }
-
-// todo: move this to a reusable util
+// todo: move to reusable
 const STATION_NAMES = [
   'SkiErg',
   'Sled Push',
@@ -19,13 +18,32 @@ const STATION_NAMES = [
 ];
 
 type SortKey = 'order' | 'median' | 'spread';
+type SortDirection = 'asc' | 'desc';
+
+// Each sort key has a sensible default direction.
+// Race order is naturally ascending, but for performance metrics we want
+// the "interesting" values (slowest, widest spread) on top by default.
+const DEFAULT_DIRECTIONS: Record<SortKey, SortDirection> = {
+  order: 'asc',
+  median: 'desc',
+  spread: 'desc',
+};
 
 export function StationTable({ stats }: StationTableProps) {
   const [sortKey, setSortKey] = useState<SortKey>('order');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
 
-  // Compute the spread once so we can both display and sort by it.
-  // Done here (not in stats.ts) because it's a presentation concern —
-  // the raw p25/p75 are what stats.ts cares about.
+  const handleSort = (key: SortKey) => {
+    if (key === sortKey) {
+      // Clicking the active column flips direction.
+      setSortDirection((d) => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      // Switching columns uses that column's default direction.
+      setSortKey(key);
+      setSortDirection(DEFAULT_DIRECTIONS[key]);
+    }
+  };
+
   const rows = stats.map((s) => ({
     ...s,
     name: STATION_NAMES[s.index],
@@ -33,38 +51,48 @@ export function StationTable({ stats }: StationTableProps) {
   }));
 
   const sortedRows = [...rows].sort((a, b) => {
-    if (sortKey === 'order') return a.index - b.index;
-    if (sortKey === 'median') return b.median - a.median; // slowest first
-    return b.spread - a.spread; // widest spread first
+    const dir = sortDirection === 'asc' ? 1 : -1;
+    if (sortKey === 'order') return (a.index - b.index) * dir;
+    if (sortKey === 'median') return (a.median - b.median) * dir;
+    return (a.spread - b.spread) * dir;
   });
+
+  // ariaSort returns the value the WAI-ARIA spec wants on a sortable column.
+  const ariaSort = (key: SortKey): 'ascending' | 'descending' | 'none' => {
+    if (key !== sortKey) return 'none';
+    return sortDirection === 'asc' ? 'ascending' : 'descending';
+  };
 
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
           <tr className="text-left text-gray-600 border-b border-gray-200">
-            <th className="py-2 pr-4">
+            <th className="py-2 pr-4" aria-sort={ariaSort('order')}>
               <SortButton
                 active={sortKey === 'order'}
-                onClick={() => setSortKey('order')}
+                direction={sortDirection}
+                onClick={() => handleSort('order')}
               >
                 Station
               </SortButton>
             </th>
             <th className="py-2 px-4">25th</th>
-            <th className="py-2 px-4">
+            <th className="py-2 px-4" aria-sort={ariaSort('median')}>
               <SortButton
                 active={sortKey === 'median'}
-                onClick={() => setSortKey('median')}
+                direction={sortDirection}
+                onClick={() => handleSort('median')}
               >
                 Median
               </SortButton>
             </th>
             <th className="py-2 px-4">75th</th>
-            <th className="py-2 pl-4">
+            <th className="py-2 pl-4" aria-sort={ariaSort('spread')}>
               <SortButton
                 active={sortKey === 'spread'}
-                onClick={() => setSortKey('spread')}
+                direction={sortDirection}
+                onClick={() => handleSort('spread')}
               >
                 Spread
               </SortButton>
@@ -90,9 +118,7 @@ export function StationTable({ stats }: StationTableProps) {
                 {formatTime(row.p75)}
               </td>
               <td className="py-2 pl-4 text-gray-600 tabular-nums">
-                {row.p25 === 0 && row.p75 === 0
-                  ? '—'
-                  : formatDuration(row.spread)}
+                {formatDuration(row.spread)}
               </td>
             </tr>
           ))}
@@ -105,15 +131,16 @@ export function StationTable({ stats }: StationTableProps) {
 function SortButton({
   children,
   active,
+  direction,
   onClick,
 }: {
   children: ReactNode;
   active: boolean;
+  direction: SortDirection;
   onClick: () => void;
 }) {
   return (
     <button
-      type="button"
       onClick={onClick}
       className={`inline-flex items-center gap-1 font-medium transition-colors ${
         active ? 'text-blue-600' : 'text-gray-500 hover:text-gray-900'
@@ -126,7 +153,7 @@ function SortButton({
           active ? 'opacity-100' : 'opacity-0'
         }`}
       >
-        ↓
+        {direction === 'asc' ? '↑' : '↓'}
       </span>
     </button>
   );
