@@ -118,7 +118,7 @@ export function StationTable({ stats }: StationTableProps) {
                 {formatTime(row.p75)}
               </td>
               <td className="py-2 pl-4 text-gray-600 tabular-nums">
-                {formatDuration(row.spread)}
+                {row.p25 > 0 && row.p75 > 0 ? formatDuration(row.spread) : '—'}
               </td>
             </tr>
           ))}
