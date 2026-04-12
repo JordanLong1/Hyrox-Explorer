@@ -2,18 +2,22 @@ import type { HyroxResult } from '../types/hyrox';
 
 /**
  * Returns the value at a given percentile (0-1) of a numeric array.
- * Uses linear interpolation between the two surrounding values when the
- * percentile doesn't land exactly on an index.
+ * Values outside [0,1] are clamped; NaN returns 0.
+ *
+ * Uses linear interpolation between neighboring values when the percentile
+ * doesn't land exactly on an index (matches numpy's default method).
  *
  * Filters out zeros, which represent missing data in this dataset.
  * Returns 0 for empty input.
- *
- * Examples:
- *   percentile([1,2,3,4,5], 0.5) -> 3   (median)
- *   percentile([1,2,3,4,5], 0.25) -> 2  (25th percentile)
- *   percentile([1,2,3,4,5], 0.75) -> 4  (75th percentile)
  */
 export function percentile(values: number[], p: number): number {
+  // Guard against invalid percentile inputs.
+  // We clamp rather than throw because callers passing 1.0 or 0.0 exactly
+  // is reasonable, and silently clamping garbage is friendlier than crashing
+  // a chart over a typo. NaN is the one case we can't recover from.
+  if (Number.isNaN(p)) return 0;
+  const clamped = Math.min(1, Math.max(0, p));
+
   if (values.length === 0) return 0;
 
   const valid = values.filter((v) => v > 0);
@@ -21,16 +25,12 @@ export function percentile(values: number[], p: number): number {
 
   const sorted = [...valid].sort((a, b) => a - b);
 
-  // Position in the sorted array — may be fractional.
-  const index = (sorted.length - 1) * p;
+  const index = (sorted.length - 1) * clamped;
   const lower = Math.floor(index);
   const upper = Math.ceil(index);
 
-  // Exact hit on an index — return that value.
   if (lower === upper) return sorted[lower];
 
-  // Otherwise, linearly interpolate between the two neighbors.
-  // This is the standard "linear" percentile method (matches numpy's default).
   const weight = index - lower;
   return sorted[lower] * (1 - weight) + sorted[upper] * weight;
 }

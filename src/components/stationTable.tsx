@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import type { StationStat } from '../lib/stats';
-import { formatTime } from '../lib/time';
+import { formatDuration, formatTime } from '../lib/time';
 
 interface StationTableProps {
   stats: StationStat[];
@@ -90,7 +90,7 @@ export function StationTable({ stats }: StationTableProps) {
                 {formatTime(row.p75)}
               </td>
               <td className="py-2 pl-4 text-gray-600 tabular-nums">
-                {formatTime(row.spread)}
+                {formatDuration(row.spread)}
               </td>
             </tr>
           ))}
@@ -105,7 +105,7 @@ function SortButton({
   active,
   onClick,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   active: boolean;
   onClick: () => void;
 }) {
