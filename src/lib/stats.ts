@@ -7,7 +7,7 @@ import type { HyroxResult } from '../types/hyrox';
  * Uses linear interpolation between neighboring values when the percentile
  * doesn't land exactly on an index (matches numpy's default method).
  *
- * Filters out zeros, which represent missing data in this dataset.
+ * Filters out zeros and negatives, which represent missing data in this dataset.
  * Returns 0 for empty input.
  */
 export function percentile(values: number[], p: number): number {
