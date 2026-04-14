@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
-import type { StationStat } from '../lib/stats';
-import { formatTime, formatDuration } from '../lib/time';
+import { formatTime, formatDuration } from '@/shared/lib/time';
+import type { StationStat } from './stats';
 
 interface StationTableProps {
   stats: StationStat[];

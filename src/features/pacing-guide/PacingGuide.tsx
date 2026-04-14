@@ -1,15 +1,13 @@
 import { useState, useMemo } from 'react';
-import { median, medianSplits, stationStats } from '../lib/stats';
-import { formatTime } from '../lib/time';
-import type { HyroxResult, Division, Gender } from '../types/hyrox';
+import { median } from '@/shared/lib/stats';
+import { formatTime } from '@/shared/lib/time';
+import type { Division, Gender } from '@/shared/types/hyrox';
+import { EmptyState } from '@/shared/components/EmptyState';
+import { useHyroxData } from '@/app/providers/DataProvider';
 
-import { EmptyState } from './emptyState';
-import { SegmentChart } from './segmentChart';
-import { StationTable } from './stationTable';
-
-interface PacingGuideProps {
-  results: HyroxResult[];
-}
+import { medianSplits, stationStats } from './stats';
+import { SegmentChart } from './SegmentChart';
+import { StationTable } from './StationTable';
 
 const TARGET_TIMES = [
   { label: '1:00', seconds: 3600 },
@@ -24,7 +22,8 @@ const TARGET_TIMES = [
 const TARGET_WINDOW_SECONDS = 120;
 const MIN_SAMPLE_SIZE = 20;
 
-export function PacingGuide({ results }: PacingGuideProps) {
+export function PacingGuide() {
+  const results = useHyroxData();
   const [targetSeconds, setTargetSeconds] = useState<number>(5400);
   const [gender, setGender] = useState<Gender>('male');
   const [division, setDivision] = useState<Division>('open');

@@ -1,21 +1,10 @@
-import { useEffect, useState } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { loadHyroxData } from './lib/loadHyroxData';
-import { PacingGuide } from './components/pacingGuide';
-import { PacingGuideSkeleton } from './components/pacingGuideSkeleton';
-import { Trends } from './components/trends';
-import { Layout } from './components/layout';
-import type { HyroxResult } from './types/hyrox';
+import { BrowserRouter } from 'react-router-dom';
+import { DataProvider, useDataStatus } from '@/app/providers/DataProvider';
+import { AppRoutes } from '@/app/routes';
+import { PacingGuideSkeleton } from '@/features/pacing-guide/PacingGuideSkeleton';
 
-function App() {
-  const [results, setResults] = useState<HyroxResult[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    loadHyroxData()
-      .then(setResults)
-      .catch((err) => setError(err instanceof Error ? err.message : String(err)));
-  }, []);
+function AppShell() {
+  const { results, error } = useDataStatus();
 
   if (error) {
     return (
@@ -40,13 +29,16 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route element={<Layout />}>
-          <Route index element={<PacingGuide results={results} />} />
-          <Route path="trends" element={<Trends results={results} />} />
-        </Route>
-      </Routes>
+      <AppRoutes />
     </BrowserRouter>
+  );
+}
+
+function App() {
+  return (
+    <DataProvider>
+      <AppShell />
+    </DataProvider>
   );
 }
 

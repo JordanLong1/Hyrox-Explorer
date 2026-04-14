@@ -1,4 +1,4 @@
-import { Skeleton } from './skeleton';
+import { Skeleton } from '@/shared/components/Skeleton';
 
 /**
  * Layout-mirroring skeleton for the Pacing Guide. Renders the same overall
