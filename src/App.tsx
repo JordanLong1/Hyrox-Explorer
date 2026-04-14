@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { loadHyroxData } from './lib/loadHyroxData';
 import { PacingGuide } from './components/pacingGuide';
 import { PacingGuideSkeleton } from './components/pacingGuideSkeleton';
+import { Trends } from './components/trends';
+import { Layout } from './components/layout';
 import type { HyroxResult } from './types/hyrox';
 
 function App() {
@@ -11,9 +14,7 @@ function App() {
   useEffect(() => {
     loadHyroxData()
       .then(setResults)
-      .catch((err) =>
-        setError(err instanceof Error ? err.message : String(err)),
-      );
+      .catch((err) => setError(err instanceof Error ? err.message : String(err)));
   }, []);
 
   if (error) {
@@ -38,9 +39,14 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <PacingGuide results={results} />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<PacingGuide results={results} />} />
+          <Route path="trends" element={<Trends results={results} />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
