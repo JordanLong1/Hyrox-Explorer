@@ -7,8 +7,8 @@ import {
   ResponsiveContainer,
   Cell,
 } from 'recharts';
-import type { MedianSplits } from '../lib/stats';
-import { formatDuration, formatTime } from '../lib/time';
+import { formatDuration, formatTime } from '@/shared/lib/time';
+import type { MedianSplits } from './stats';
 
 interface SegmentChartProps {
   medians: MedianSplits;

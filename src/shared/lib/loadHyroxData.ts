@@ -4,7 +4,7 @@ import type {
   HyroxResult,
   Division,
   Gender,
-} from '../types/hyrox';
+} from '@/shared/types/hyrox';
 
 // Convert "H:MM:SS" to seconds. Returns 0 for empty/invalid.
 // We use 0 rather than null so downstream math doesn't need null checks —
