@@ -8,23 +8,12 @@ import {
   Cell,
 } from 'recharts';
 import { formatDuration, formatTime } from '@/shared/lib/time';
+import { STATION_NAMES } from '@/shared/lib/stations';
 import type { MedianSplits } from './stats';
 
 interface SegmentChartProps {
   medians: MedianSplits;
 }
-
-// The 8 Hyrox stations in order. These map to work_1 through work_8.
-const STATION_NAMES = [
-  'SkiErg',
-  'Sled Push',
-  'Sled Pull',
-  'Burpees',
-  'Rowing',
-  'Farmers Carry',
-  'Lunges',
-  'Wall Balls',
-];
 
 // Colors for the two segment types.
 const COLORS = {
