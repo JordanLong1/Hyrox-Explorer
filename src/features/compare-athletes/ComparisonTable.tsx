@@ -31,14 +31,12 @@ export function ComparisonTable({ athletes }: ComparisonTableProps) {
             : `All times shown relative to athlete 1.`}
         </p>
         <div
-          role="tablist"
           aria-label="Table display mode"
           className="inline-flex rounded-md border border-gray-300 overflow-hidden text-sm"
         >
           <button
             type="button"
-            role="tab"
-            aria-selected={mode === 'absolute'}
+            aria-pressed={mode === 'absolute'}
             onClick={() => setMode('absolute')}
             className={`px-3 py-1.5 font-medium ${
               mode === 'absolute'
@@ -50,8 +48,7 @@ export function ComparisonTable({ athletes }: ComparisonTableProps) {
           </button>
           <button
             type="button"
-            role="tab"
-            aria-selected={mode === 'delta'}
+            aria-pressed={mode === 'delta'}
             disabled={!canToggleDelta}
             onClick={() => setMode('delta')}
             className={`px-3 py-1.5 font-medium border-l border-gray-300 ${
@@ -152,4 +149,3 @@ export function ComparisonTable({ athletes }: ComparisonTableProps) {
     </div>
   );
 }
-
