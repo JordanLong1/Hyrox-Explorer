@@ -2,6 +2,7 @@ import { lazy, Suspense } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { Layout } from './Layout';
 import { PacingGuideSkeleton } from '@/features/pacing-guide/PacingGuideSkeleton';
+import { TrendsSkeleton } from '@/features/trends/TrendsSkeleton';
 
 const PacingGuide = lazy(() =>
   import('@/features/pacing-guide/PacingGuide').then((m) => ({
@@ -27,7 +28,7 @@ export function AppRoutes() {
         <Route
           path="trends"
           element={
-            <Suspense fallback={null}>
+            <Suspense fallback={<TrendsSkeleton />}>
               <Trends />
             </Suspense>
           }
