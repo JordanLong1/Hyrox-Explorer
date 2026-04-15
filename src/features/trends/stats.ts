@@ -1,4 +1,5 @@
 import { median } from '@/shared/lib/stats';
+import { parseEventName } from '@/shared/lib/eventName';
 import type { Division, Gender, HyroxResult } from '@/shared/types/hyrox';
 
 /**
@@ -22,14 +23,6 @@ export interface EventStatsFilters {
   gender: Gender;
   division: Division;
   minFinishers: number;
-}
-
-// "S6 2023 München" → { season: 6, city: "München" }
-// Year is dropped — it's redundant with season and not used for ordering.
-function parseEventName(name: string): { season: number; city: string } {
-  const match = name.match(/^S(\d+)\s+\d+\s+(.+)$/);
-  if (!match) return { season: 0, city: name };
-  return { season: Number(match[1]), city: match[2].trim() };
 }
 
 /**
