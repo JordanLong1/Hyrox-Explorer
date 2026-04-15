@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { STATION_NAMES } from '@/shared/lib/stations';
-import { formatTime } from '@/shared/lib/time';
+import { formatSignedDelta, formatTime } from '@/shared/lib/time';
 import type { HyroxResult } from '@/shared/types/hyrox';
 import { ATHLETE_COLORS } from './colors';
 
@@ -112,11 +112,16 @@ export function ComparisonTable({ athletes }: ComparisonTableProps) {
                     const isFastest =
                       mode === 'absolute' && t > 0 && t === fastest;
 
+                    // In delta mode we need a valid baseline to compute
+                    // anything meaningful. If athlete 1 is missing a split at
+                    // this station, we render "—" across the row — showing
+                    // absolute times would contradict the "relative to
+                    // athlete 1" framing in the header.
                     let display: string;
                     if (t <= 0) {
                       display = '—';
                     } else if (mode === 'delta') {
-                      if (baseline <= 0) display = formatTime(t);
+                      if (baseline <= 0) display = '—';
                       else if (i === 0) display = '0:00';
                       else display = formatSignedDelta(t - baseline);
                     } else {
@@ -148,12 +153,3 @@ export function ComparisonTable({ athletes }: ComparisonTableProps) {
   );
 }
 
-function formatSignedDelta(seconds: number): string {
-  const rounded = Math.round(seconds);
-  if (rounded === 0) return '±0:00';
-  const sign = rounded > 0 ? '+' : '−';
-  const abs = Math.abs(rounded);
-  const m = Math.floor(abs / 60);
-  const s = abs % 60;
-  return `${sign}${m}:${s.toString().padStart(2, '0')}`;
-}

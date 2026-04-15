@@ -1,5 +1,5 @@
 import type { HyroxResult } from '@/shared/types/hyrox';
-import { formatTime } from '@/shared/lib/time';
+import { formatSignedDelta, formatTime } from '@/shared/lib/time';
 import { ATHLETE_COLORS } from './colors';
 import { relativeSummary } from './stats';
 
@@ -79,13 +79,3 @@ export function SummarySection({ athletes }: SummarySectionProps) {
   );
 }
 
-function formatSignedDelta(seconds: number): string {
-  const rounded = Math.round(seconds);
-  if (rounded === 0) return '±0s';
-  const sign = rounded > 0 ? '+' : '−';
-  const abs = Math.abs(rounded);
-  const m = Math.floor(abs / 60);
-  const s = abs % 60;
-  if (m > 0) return `${sign}${m}:${s.toString().padStart(2, '0')}`;
-  return `${sign}${s}s`;
-}

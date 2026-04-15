@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import type { Division, Gender, HyroxResult } from '@/shared/types/hyrox';
 import { formatTime } from '@/shared/lib/time';
+import { compareByEventName } from '@/shared/lib/eventName';
 import { athleteKey } from './stats';
 
 interface AthleteSelectorProps {
@@ -34,7 +35,7 @@ export function AthleteSelector({
       }
     }
     return [...seen.values()].sort((a, b) =>
-      a.eventName.localeCompare(b.eventName),
+      compareByEventName(a.eventName, b.eventName),
     );
   }, [results]);
 

@@ -1,5 +1,6 @@
 import { STATION_NAMES } from '@/shared/lib/stations';
 import { formatTime } from '@/shared/lib/time';
+import { parseEventName } from '@/shared/lib/eventName';
 import type { HyroxResult } from '@/shared/types/hyrox';
 
 /**
@@ -30,9 +31,8 @@ export function athleteKey(r: HyroxResult, rowIndex: number): string {
  * Example: "1:28:42 · S6 London · M Open 30-34 · GBR"
  */
 export function formatAthleteLabel(r: HyroxResult): string {
-  const season = seasonFromEventName(r.eventName);
-  const city = cityFromEventName(r.eventName);
-  const seasonCity = season ? `S${season} ${city}` : r.eventName;
+  const { season, city } = parseEventName(r.eventName);
+  const seasonCity = season > 0 ? `S${season} ${city}` : r.eventName;
   const genderShort = r.gender === 'male' ? 'M' : 'F';
   const division = r.division[0].toUpperCase() + r.division.slice(1);
   const nationality = r.nationality?.trim() || '—';
@@ -46,22 +46,11 @@ export function formatAthleteLabel(r: HyroxResult): string {
  * Example: "1:28:42 · S6 London · M Open"
  */
 export function formatAthleteShortLabel(r: HyroxResult): string {
-  const season = seasonFromEventName(r.eventName);
-  const city = cityFromEventName(r.eventName);
-  const seasonCity = season ? `S${season} ${city}` : r.eventName;
+  const { season, city } = parseEventName(r.eventName);
+  const seasonCity = season > 0 ? `S${season} ${city}` : r.eventName;
   const genderShort = r.gender === 'male' ? 'M' : 'F';
   const division = r.division[0].toUpperCase() + r.division.slice(1);
   return `${formatTime(r.totalTime)} · ${seasonCity} · ${genderShort} ${division}`;
-}
-
-function seasonFromEventName(name: string): number | null {
-  const match = name.match(/^S(\d+)\b/);
-  return match ? Number(match[1]) : null;
-}
-
-function cityFromEventName(name: string): string {
-  const match = name.match(/^S\d+\s+\d+\s+(.+)$/);
-  return match ? match[1].trim() : name;
 }
 
 /**
