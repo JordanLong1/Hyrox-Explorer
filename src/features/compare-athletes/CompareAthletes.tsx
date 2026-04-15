@@ -93,7 +93,7 @@ export function CompareAthletes() {
       {!hasAthletes ? (
         <EmptyState
           title="Add athletes to start comparing"
-          description="Pick an event above and click an athlete's row to add them. Add two or more to see side-by-side splits."
+          description='Pick an event above and click "Add" next to an athlete to add them. Add two or more to see side-by-side splits.'
         />
       ) : (
         <>
