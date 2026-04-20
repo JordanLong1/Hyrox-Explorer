@@ -102,7 +102,8 @@ export function relativeSummary(
   own: HyroxResult,
   group: HyroxResult[],
 ): RelativeSummary {
-  if (group.length < 2) return { best: null, worst: null };
+  const comparisonGroup = group.filter((g) => g !== own);
+  if (comparisonGroup.length < 1) return { best: null, worst: null };
 
   let best: RelativeSegment | null = null;
   let worst: RelativeSegment | null = null;
@@ -111,10 +112,10 @@ export function relativeSummary(
     const ownTime = segmentTime(own, pos);
     if (ownTime <= 0) continue;
 
-    const groupTimes = group
+    const groupTimes = comparisonGroup
       .map((g) => segmentTime(g, pos))
       .filter((t) => t > 0);
-    if (groupTimes.length < 2) continue;
+    if (groupTimes.length < 1) continue;
 
     const groupMedian = medianOf(groupTimes);
     const delta = ownTime - groupMedian;
