@@ -35,9 +35,10 @@ export function formatAthleteLabel(r: HyroxResult): string {
   const seasonCity = season > 0 ? `S${season} ${city}` : r.eventName;
   const genderShort = r.gender === 'male' ? 'M' : 'F';
   const division = r.division[0].toUpperCase() + r.division.slice(1);
+  const ageGroup = r.ageGroup?.trim() || '—';
   const nationality = r.nationality?.trim() || '—';
 
-  return `${formatTime(r.totalTime)} · ${seasonCity} · ${genderShort} ${division} ${r.ageGroup} · ${nationality}`;
+  return `${formatTime(r.totalTime)} · ${seasonCity} · ${genderShort} ${division} ${ageGroup} · ${nationality}`;
 }
 
 /**
