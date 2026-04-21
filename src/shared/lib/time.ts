@@ -27,3 +27,19 @@ export function formatDuration(seconds: number): string {
   }
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
+
+/**
+ * Format a signed time delta in seconds as "±0:00" / "+m:ss" / "−m:ss".
+ * Uses the Unicode minus sign (−) rather than hyphen-minus for visual
+ * alignment with the plus sign. Zero is always rendered as "±0:00" so a
+ * column of deltas keeps a consistent width.
+ */
+export function formatSignedDelta(seconds: number): string {
+  const rounded = Math.round(seconds);
+  const abs = Math.abs(rounded);
+  const m = Math.floor(abs / 60);
+  const s = abs % 60;
+  const body = `${m}:${s.toString().padStart(2, '0')}`;
+  if (rounded === 0) return `±${body}`;
+  return `${rounded > 0 ? '+' : '−'}${body}`;
+}

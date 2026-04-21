@@ -22,6 +22,9 @@ export function Layout() {
             <NavLink to="/trends" className={navLinkClass}>
               Trends
             </NavLink>
+            <NavLink to="/compare" className={navLinkClass}>
+              Compare
+            </NavLink>
           </div>
         </div>
       </nav>
