@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useHyroxData } from '@/app/providers/DataProvider';
+import { useHyroxData } from '@/app/providers/useHyroxData';
 import { EmptyState } from '@/shared/components/EmptyState';
 import type { HyroxResult } from '@/shared/types/hyrox';
 

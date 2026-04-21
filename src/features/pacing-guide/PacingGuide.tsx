@@ -3,7 +3,7 @@ import { median } from '@/shared/lib/stats';
 import { formatTime } from '@/shared/lib/time';
 import type { Division, Gender } from '@/shared/types/hyrox';
 import { EmptyState } from '@/shared/components/EmptyState';
-import { useHyroxData } from '@/app/providers/DataProvider';
+import { useHyroxData } from '@/app/providers/useHyroxData';
 
 import { medianSplits, stationStats } from './stats';
 import { SegmentChart } from './SegmentChart';
