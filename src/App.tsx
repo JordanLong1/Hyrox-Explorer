@@ -1,5 +1,6 @@
 import { BrowserRouter } from 'react-router-dom';
-import { DataProvider, useDataStatus } from '@/app/providers/DataProvider';
+import { DataProvider } from '@/app/providers/DataProvider';
+import { useDataStatus } from '@/app/providers/useHyroxData';
 import { AppRoutes } from '@/app/routes';
 import { PacingGuideSkeleton } from '@/features/pacing-guide/PacingGuideSkeleton';
 

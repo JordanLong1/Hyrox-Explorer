@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { EmptyState } from '@/shared/components/EmptyState';
-import { useHyroxData } from '@/app/providers/DataProvider';
+import { useHyroxData } from '@/app/providers/useHyroxData';
 import type { Division, Gender } from '@/shared/types/hyrox';
 
 import { eventStats, seasonSummaries } from './stats';
